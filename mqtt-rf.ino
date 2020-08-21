@@ -64,7 +64,7 @@ SimpleDHT11 dht11(DHT11_PIN);
 
 // You should get Auth Token in the Blynk App.
 // Go to the Project Settings (nut icon).
-char auth[] = "GX7Nr2dTzCsVpUrq8MkOeR6-J7zaj9GW";
+char auth[] = "";
 
 const char *ssid = "";
 const char *pass = "";
