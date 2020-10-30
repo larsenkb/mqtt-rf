@@ -45,29 +45,29 @@
 
 #define RF_TX_PIN     D4
 #define RF_RX_PIN     D7
-#define RF_TX_EN_PIN  D8
-#define DHT11_PIN     D1
+///#define RF_TX_EN_PIN  D8
+///#define DHT11_PIN     D1
 
 //#define RF_PUB_TOPIC   "rfgw/tomqtt"
 //#define RF_SUB_TOPIC   "rfgw/torf"
-#define PUB_DHT11_TOPIC   "rfgw/dht11"
+///#define PUB_DHT11_TOPIC   "rfgw/dht11"
 
 #define NEXT_DELAY      500
 #define NEXT_RF_DELAY   500  
-#define NEXT_DHT_DELAY  (1000 * 60)
+///#define NEXT_DHT_DELAY  (1000 * 60)
 
 #define EN_BLYNK    1
 
 RCSwitch rf = RCSwitch();
 
-SimpleDHT11 dht11(DHT11_PIN);
+///SimpleDHT11 dht11(DHT11_PIN);
 
 // You should get Auth Token in the Blynk App.
 // Go to the Project Settings (nut icon).
-char auth[] = "";
+char auth[] = "GX7Nr2dTzCsVpUrq8MkOeR6-J7zaj9GW";
 
-const char *ssid = "";
-const char *pass = "";
+const char *ssid = "chewbacca";
+const char *pass = "Car voice, une oeuvre...";
 const char *mqtt_server = "192.168.1.65";
 
 WiFiClient espClient;
@@ -77,7 +77,7 @@ long lastMsg = 0;
 int value = 0;
 unsigned long next;
 unsigned long next_rf;  
-unsigned long next_dht;
+///unsigned long next_dht;
 
 
 
@@ -133,17 +133,17 @@ void callback(char *topic, byte *payload, unsigned int length)
       return;
     }
   }
-  if (next < millis()) {
-    digitalWrite(RF_TX_EN_PIN, HIGH);
-    delay(50);    // delay to allow relay to switch
+///  if (next < millis()) {
+///    digitalWrite(RF_TX_EN_PIN, HIGH);
+ ///   delay(50);    // delay to allow relay to switch
 //    topic[12] = '\0';
     Serial.printf("%s %d\n\r", topic, data);
     txCode(data, 186, 3);
-    next = millis() + NEXT_DELAY;
+///    next = millis() + NEXT_DELAY;
     client.publish(ttopic, (byte *)tpayload, strlen(tpayload), true);
-    delay(50);    // delay to allow relay to switch
-    digitalWrite(RF_TX_EN_PIN, LOW);
-  }
+///    delay(50);    // delay to allow relay to switch
+///    digitalWrite(RF_TX_EN_PIN, LOW);
+///  }
 }
 #else
 void callback(char *topic, byte *payload, unsigned int length)
@@ -197,8 +197,8 @@ void setup()
 {
 //  pinMode(BUILTIN_LED, OUTPUT);     // Initialize the BUILTIN_LED pin as an output
 //  digitalWrite(BUILTIN_LED, LOW);
-  pinMode(RF_TX_EN_PIN, OUTPUT);     // Initialize TX/RX relay control
-  digitalWrite(RF_TX_EN_PIN, LOW);
+///  pinMode(RF_TX_EN_PIN, OUTPUT);     // Initialize TX/RX relay control
+///  digitalWrite(RF_TX_EN_PIN, LOW);
   pinMode(RF_TX_PIN, OUTPUT);     // Initialize the RF_TX_PIN pin as an output
   digitalWrite(RF_TX_PIN, LOW);
 
@@ -209,7 +209,7 @@ void setup()
   client.setCallback(callback);
   next = millis() + NEXT_DELAY;
   next_rf = millis() + NEXT_RF_DELAY;
-  next_dht = millis() + NEXT_DHT_DELAY;
+///  next_dht = millis() + NEXT_DHT_DELAY;
   
 }
 
@@ -261,7 +261,7 @@ void loop()
   if (rf.available()) {
     Serial.printf("%d %d %d %d %d\n\r", rf.getReceivedValue(), rf.getReceivedBitlength(), rf.getReceivedDelay(), rf.getReceivedRawdata(),rf.getReceivedProtocol());
     // don't respond to every rf transmission (it is repeated several times and as long as button is pressed)
-    if (next_rf < millis()) {
+ ///   if (next_rf < millis()) {
       //client.publish(RF_PUB_TOPIC, itoa(rf.getReceivedValue(), buff, 10));
       next_rf = millis() + NEXT_RF_DELAY;
       if (rf.getReceivedValue() == 21811) {
@@ -277,22 +277,21 @@ void loop()
         Blynk.virtualWrite(V2, 0);
         client.publish("rfgw/switch2", (byte*)"OFF", 3, true);
       }
-   }
+///   }
     rf.resetAvailable();
   }
 
-  if (next_dht < millis()) {
-    next_dht = millis() + NEXT_DHT_DELAY;
-    // read without samples.
-    byte temperature = 0;
-    byte humidity = 0;
-    if (dht11.read(&temperature, &humidity, NULL) == SimpleDHTErrSuccess) {
-      sprintf(buff, "{\"hum\":\"%d\",\"temp\":\"%d\"}", (int)humidity, (int)temperature);
-      client.publish(PUB_DHT11_TOPIC, (byte*)buff, strlen(buff), true);
-      Serial.println(buff);
-    }
-  
-  }
+///  if (next_dht < millis()) {
+///    next_dht = millis() + NEXT_DHT_DELAY;
+///    // read without samples.
+///    byte temperature = 0;
+///    byte humidity = 0;
+///    if (dht11.read(&temperature, &humidity, NULL) == SimpleDHTErrSuccess) {
+///      sprintf(buff, "{\"hum\":\"%d\",\"temp\":\"%d\"}", (int)humidity, (int)temperature);
+///      client.publish(PUB_DHT11_TOPIC, (byte*)buff, strlen(buff), true);
+///      Serial.println(buff);
+///    }
+///  }
 }
 
 void txCode(int val, int dly, int rpt)
